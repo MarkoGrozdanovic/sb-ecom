@@ -44,6 +44,10 @@ public class User {
         this.userName = userName;
     }
 
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Cart cart;
+
 
 
 
