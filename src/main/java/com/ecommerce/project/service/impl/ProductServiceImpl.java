@@ -3,7 +3,6 @@ package com.ecommerce.project.service.impl;
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
-import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.CartDTO;

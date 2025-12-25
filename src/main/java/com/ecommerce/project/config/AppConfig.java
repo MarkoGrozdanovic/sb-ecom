@@ -1,11 +1,6 @@
 package com.ecommerce.project.config;
 
-import com.ecommerce.project.model.Order;
-import com.ecommerce.project.model.OrderItem;
-import com.ecommerce.project.payload.OrderDTO;
-import com.ecommerce.project.payload.OrderItemDTO;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

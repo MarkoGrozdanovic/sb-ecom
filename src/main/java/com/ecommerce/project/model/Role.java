@@ -2,7 +2,6 @@ package com.ecommerce.project.model;
 
 import com.ecommerce.project.model.enums.AppRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
