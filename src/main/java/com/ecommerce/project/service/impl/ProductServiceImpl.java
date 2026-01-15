@@ -92,7 +92,19 @@ public class ProductServiceImpl implements ProductService {
                 : Sort.by(sortBy).descending();
 
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Specification<Product> spec = getProductSpecification(keyword, category);
+        Specification<Product> spec =  (root, query, cb) -> cb.conjunction();
+
+        if(keyword != null && keyword.isEmpty()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%"));
+
+        }
+
+        if(category != null && category.isEmpty()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get("category").get("categoryName"), category));
+
+        }
 
         Page<Product> productPage = productRepository.findAll(spec, pageDetails);
         List<Product> products = productPage.getContent();
@@ -118,23 +130,6 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setLastPage(productPage.isLast());
 
         return productResponse;
-    }
-
-    private static Specification<Product> getProductSpecification(String keyword, String category) {
-        Specification<Product> spec =  (root, query, cb) -> cb.conjunction();
-
-        if(keyword != null && keyword.isEmpty()){
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%"));
-
-        }
-
-        if(category != null && category.isEmpty()){
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get("category").get("categoryName"), category));
-
-        }
-        return spec;
     }
 
     private String constructImageUrl(String imageName){
