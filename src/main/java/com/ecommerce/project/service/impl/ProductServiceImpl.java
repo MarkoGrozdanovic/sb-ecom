@@ -45,10 +45,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Value("${project.image}")
-    private String path;
     @Autowired
     private CartService cartService;
+
+    @Value("${project.image}")
+    private String path;
+
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
@@ -92,7 +96,11 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productPage.getContent();
 
         List<ProductDTO> productDTOs = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage(constructImageUrl(product.getImage()));
+                    return productDTO;
+                })
                 .toList();
 
         if(products.isEmpty()){
@@ -108,6 +116,10 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setLastPage(productPage.isLast());
 
         return productResponse;
+    }
+
+    private String constructImageUrl(String imageName){
+        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
     }
 
     @Override
