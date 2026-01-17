@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -18,10 +19,12 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @ToString.Exclude
     private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @ToString.Exclude
     private Product product;
 
     private Integer quantity;
