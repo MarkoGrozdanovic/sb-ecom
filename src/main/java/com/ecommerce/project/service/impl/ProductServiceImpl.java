@@ -114,9 +114,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Page<Product> productPage = productRepository.findAll(spec, pageDetails);
-       for (Product p: productPage.getContent()){
-           System.out.println("Product: "+p.toString());
-       }
         List<Product> products = productPage.getContent();
 
         List<ProductDTO> productDTOs = products.stream()
