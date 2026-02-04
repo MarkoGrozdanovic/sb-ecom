@@ -1,6 +1,7 @@
 package com.ecommerce.project.exceptions;
 
 import com.ecommerce.project.payload.response.APIResponse;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestControllerAdvice
 public class MyGlobalExceptionHandler {
@@ -44,7 +44,16 @@ public class MyGlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<APIResponse> myConstraintViolationException(ConstraintViolationException e){
-        String message = e.getMessage();
+
+        Collection<String> messageTemplates = new ArrayList<>();
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+
+        for (ConstraintViolation<?> violation : violations) {
+            messageTemplates.add(violation.getMessageTemplate());
+        }
+
+        String message = messageTemplates.iterator().next();
+
         APIResponse apiResponse = new APIResponse(message, false);
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }

@@ -89,15 +89,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String keyword, String category) {
 
-        System.out.println("------------------------------------------");
-        System.out.println("pageNumber: "+pageNumber);
-        System.out.println("pageSize: "+pageSize);
-        System.out.println("sortBy: "+sortBy);
-        System.out.println("sortOrder: "+sortOrder);
-        System.out.println("keyword: "+keyword);
-        System.out.println("category: "+category);
-        System.out.println("------------------------------------------");
-
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ?  Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
