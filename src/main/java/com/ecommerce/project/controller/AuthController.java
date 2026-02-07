@@ -72,7 +72,7 @@ public class AuthController {
                 .collect(Collectors.toList());
 
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
-                userDetails.getUsername(), roles, cookie.getValue());
+                userDetails.getUsername(), userDetails.getEmail(),roles, cookie.getValue());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
                 cookie.toString())
