@@ -154,10 +154,10 @@ public class WebSecurityConfig {
                 userRepository.save(seller);
             });
 
-            userRepository.findByUserName("admin").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
-            });
+//            userRepository.findByUserName("admin").ifPresent(admin -> {
+//                admin.setRoles(adminRoles);
+//                userRepository.save(admin);
+//            });
         };
     }
 }
