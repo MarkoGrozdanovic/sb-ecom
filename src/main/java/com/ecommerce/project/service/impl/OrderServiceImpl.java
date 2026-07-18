@@ -9,6 +9,7 @@ import com.ecommerce.project.payload.response.OrderResponse;
 import com.ecommerce.project.repositories.*;
 import com.ecommerce.project.service.CartService;
 import com.ecommerce.project.service.OrderService;
+import com.ecommerce.project.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -32,8 +33,9 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final CartService cartService;
     private final ModelMapper modelMapper;
+    private final AuthUtil authUtil;
 
-    public OrderServiceImpl(CartRepository cartRepository, AddressRepository addressRepository, PaymentRepository paymentRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, CartService cartService, ModelMapper modelMapper) {
+    public OrderServiceImpl(CartRepository cartRepository, AddressRepository addressRepository, PaymentRepository paymentRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, CartService cartService, ModelMapper modelMapper, AuthUtil authUtil) {
         this.cartRepository = cartRepository;
         this.addressRepository = addressRepository;
         this.paymentRepository = paymentRepository;
@@ -42,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
         this.productRepository = productRepository;
         this.cartService = cartService;
         this.modelMapper = modelMapper;
+        this.authUtil = authUtil;
     }
 
     @Override
@@ -142,6 +145,45 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         return modelMapper.map(order, OrderDTO.class);
+    }
+
+    @Override
+    public OrderResponse getAllSellerOrders(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+
+        User seller = authUtil.loggedInUser();
+
+        Page<Order> pageOrders = orderRepository.findAll(pageDetails);
+
+        List<Order> sellerOrders = pageOrders.getContent().stream()
+                .filter(order -> order.getOrderItems().stream()
+                        .anyMatch(orderItem -> {
+                            var product = orderItem.getProduct();
+                            if(product == null || product.getUser() == null ){
+                                return false;
+                            }
+
+                            return orderItem.getProduct().getUser().getUserId().equals(seller.getUserId());
+                        }))
+                .toList();
+
+        List<OrderDTO> orderDTOS = sellerOrders.stream()
+                .map(order -> modelMapper.map(order, OrderDTO.class))
+                .toList();
+
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setContent(orderDTOS);
+        orderResponse.setPageNumber(pageOrders.getNumber());
+        orderResponse.setPageSize(pageOrders.getSize());
+        orderResponse.setTotalElements(pageOrders.getTotalElements());
+        orderResponse.setTotalPages(pageOrders.getTotalPages());
+        orderResponse.setLastPage(pageOrders.isLast());
+
+        return orderResponse;
     }
 
 
